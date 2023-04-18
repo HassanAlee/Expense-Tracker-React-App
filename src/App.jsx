@@ -1,35 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
+import React from "react";
+import ExpenseForm from "./components/ExpenseForm";
+import ExpenseList from "./components/ExpenseList";
+import Alert from "./components/Alert";
+import "./App.css";
+import { useGlobalContext } from "./context";
 function App() {
-  const [count, setCount] = useState(0)
-
+  const { expenses, alert } = useGlobalContext();
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
-  )
+    <>
+      {alert.show && <Alert type={alert.type} text={alert.text} />}
+      <h1>budget calculator</h1>
+      <main className="App">
+        <ExpenseForm />
+        <ExpenseList />
+      </main>
+      <h1>
+        total spending :{" "}
+        <span className="total">
+          ${" "}
+          {expenses.reduce((acc, cur) => {
+            acc += parseInt(cur.amount);
+            return acc;
+          }, 0)}
+        </span>
+      </h1>
+    </>
+  );
 }
 
-export default App
+export default App;
