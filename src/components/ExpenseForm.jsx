@@ -3,8 +3,15 @@ import { MdSend } from "react-icons/md";
 import { useGlobalContext } from "../context";
 
 const ExpenseForm = () => {
-  const { handleSubmit, isEditing, setCharge, setAmount, amount, charge } =
-    useGlobalContext();
+  const {
+    handleSubmit,
+    isEditing,
+    setCharge,
+    setAmount,
+    amount,
+    charge,
+    submitError,
+  } = useGlobalContext();
   return (
     <form>
       <div className="form-center">
@@ -40,9 +47,13 @@ const ExpenseForm = () => {
         className="btn"
         onClick={(e) => {
           e.preventDefault();
-          handleSubmit(charge, amount);
-          setCharge("");
-          setAmount("");
+          if (charge === "" || amount === "") {
+            submitError("danger", "all fields are mandatory");
+          } else {
+            handleSubmit(charge, amount);
+            setCharge("");
+            setAmount("");
+          }
         }}
       >
         {isEditing ? "edit" : "submit"}

@@ -1,4 +1,4 @@
-import React, { useReducer, useContext, useState } from "react";
+import React, { useReducer, useContext, useState, useEffect } from "react";
 import { reducer } from "./Reducer";
 import { v4 as uuid } from "uuid";
 const AppContext = React.createContext();
@@ -7,10 +7,16 @@ const AppProvider = ({ children }) => {
   const [amount, setAmount] = useState("");
   const [id, setId] = useState("");
   const [alert, setAlert] = useState({ show: false });
+  const localExpense = () => {
+    return localStorage.getItem("expenses")
+      ? JSON.parse(localStorage.getItem("expenses"))
+      : [];
+  };
   const initialState = {
-    expenses: [],
+    expenses: localExpense(),
     isEditing: false,
   };
+
   // submitHandler
   const handleSubmit = (charge, amount) => {
     if (state.isEditing) {
@@ -53,7 +59,17 @@ const AppProvider = ({ children }) => {
       setAlert({ show: false });
     }, 3000);
   };
+  // submit error
+  const submitError = (type, text) => {
+    setAlert({ show: true, type, text });
+    setTimeout(() => {
+      setAlert({ show: false });
+    }, 3000);
+  };
   const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect(() => {
+    localStorage.setItem("expenses", JSON.stringify(state.expenses));
+  }, [state.expenses]);
   return (
     <AppContext.Provider
       value={{
@@ -69,6 +85,7 @@ const AppProvider = ({ children }) => {
         alert,
         setAlert,
         handleAlert,
+        submitError,
       }}
     >
       {children}
@@ -78,4 +95,5 @@ const AppProvider = ({ children }) => {
 export const useGlobalContext = () => {
   return useContext(AppContext);
 };
+
 export { AppContext, AppProvider };
